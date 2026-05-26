@@ -303,3 +303,72 @@ DEFAULT_THROTTLE_RATES = {
 ```
 http://localhost:8000/api/docs/
 ```
+
+## 12. Modelo de Base de Datos
+
+Este proyecto define tres tablas principales en la base de datos:
+
+---
+
+### 1. vulnerabilities
+
+Representa las vulnerabilidades importadas desde NVD (NIST).
+
+**Campos principales:**
+- cve_id (unique): Identificador CVE
+- description: Descripción de la vulnerabilidad
+- severity: Nivel de severidad (CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN)
+- score: Puntaje CVSS (opcional)
+- status: Estado (ACTIVE, FIXED, DEPRECATED)
+- published_at: Fecha de publicación
+- last_modified_at: Última modificación
+- source: Fuente de datos (NVD)
+- raw_payload: JSON original de NVD
+- created_at: Fecha de creación en el sistema
+- updated_at: Fecha de actualización
+
+---
+
+### 2. fixed_vulnerabilities
+
+Registra qué vulnerabilidades fueron marcadas como solucionadas por los usuarios.
+
+**Relaciones:**
+- vulnerability → Vulnerability
+- fixed_by → Usuario (AUTH_USER_MODEL)
+
+**Campos principales:**
+- vulnerability (FK)
+- fixed_by (FK)
+- notes: Notas opcionales del fix
+- fixed_at: Fecha de marcado como resuelto
+
+**Restricción:**
+- Unique (vulnerability, fixed_by)
+
+---
+
+### 3. audit_logs
+
+Registro de auditoría del sistema.
+
+**Acciones soportadas:**
+- FIX
+- UNFIX
+- SYNC
+
+**Campos principales:**
+- user: Usuario que ejecuta la acción (nullable)
+- action: Tipo de acción
+- cve_id: Vulnerabilidad afectada
+- metadata: Información adicional (JSON)
+- created_at: Fecha del evento
+
+---
+
+## Nota
+
+Estas tablas soportan:
+- Gestión de vulnerabilidades
+- Flujo de marcado FIX / UNFIX
+- Auditoría completa de operaciones
