@@ -43,6 +43,12 @@ REST_FRAMEWORK = {
         "rest_framework.permissions.IsAuthenticated",
     ),
     "DEFAULT_SCHEMA_CLASS": "drf_spectacular.openapi.AutoSchema",
+    "DEFAULT_THROTTLE_RATES": {
+        "anon": "100/day", # 100 peticiones por día para usuarios anónimos
+        "user": "1000/day", # 1000 peticiones por día para usuarios autenticados
+        "fixed": "60/min", # 60 peticiones por minuto para el endpoint de fixed
+        "sync": "5/min", # 5 peticiones por minuto para el endpoint de sync
+    }
 }
 
 SIMPLE_JWT = {

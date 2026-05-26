@@ -18,6 +18,7 @@ from vulnerabilities.services.vulnerability_service import (
     get_all_vulnerabilities,
     get_vulnerability_summary,
 )
+from vulnerabilities.throttles import FixedRateThrottle
 
 
 @extend_schema(
@@ -70,6 +71,7 @@ class VulnerabilityListView(ListAPIView):
 )
 class FixedVulnerabilitiesView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_classes = [FixedRateThrottle]
 
     def post(self, request):
         serializer = FixedVulnerabilityRequestSerializer(data=request.data)

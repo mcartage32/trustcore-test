@@ -8,6 +8,7 @@ from vulnerabilities.constants import (
     NVD_DEFAULT_PAGE,
     NVD_DEFAULT_LIMIT,
 )
+from vulnerabilities.throttles import SyncRateThrottle
 
 @extend_schema(
     request=None,
@@ -17,6 +18,7 @@ from vulnerabilities.constants import (
 )
 class SyncVulnerabilitiesView(APIView):
     permission_classes = [IsAuthenticated]
+    throttle_classes = [SyncRateThrottle]
 
     def post(self, request):
         result = run_nvd_sync(
