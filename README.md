@@ -15,6 +15,8 @@ Incluye autenticación JWT, rate limiting, auditoría y sincronización con NVD.
 - Docker & Docker Compose (recomendado)
 - PostgreSQL (si se ejecuta localmente)
 
+> **⚠️ Importante**: PostgreSQL usa el puerto **5432** por defecto y Django el puerto **8000**, por lo que debes asegurarte de que estos puertos estén libres antes de ejecutar el proyecto.
+
 ### Backend
 
 - Python 3.12+
