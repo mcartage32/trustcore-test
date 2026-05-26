@@ -8,7 +8,35 @@ Incluye autenticación JWT, rate limiting, auditoría y sincronización con NVD.
 
 ---
 
-## 2. Arquitectura del Proyecto
+## 2. Requisitos previos
+
+### Infraestructura
+
+- Docker & Docker Compose (recomendado)
+- PostgreSQL (si se ejecuta localmente)
+
+### Backend
+
+- Python 3.12+
+- uv (gestor de dependencias)
+
+### Herramientas y librerías usadas
+
+- django>=6.0.5
+- django-filter>=25.2
+- djangorestframework>=3.17.1
+- djangorestframework-simplejwt>=5.5.1
+- drf-spectacular>=0.29.0
+- psycopg[binary]>=3.3.4
+- pytest>=9.0.3
+- pytest-cov>=7.1.0
+- pytest-django>=4.12.0
+- python-dotenv>=1.2.2
+- requests>=2.34.2
+
+---
+
+## 3. Arquitectura del Proyecto
 
 El backend sigue una arquitectura tipo **Clean Architecture ligera**:
 
@@ -19,7 +47,7 @@ El backend sigue una arquitectura tipo **Clean Architecture ligera**:
 
 ---
 
-## 2.1 Estructura del Proyecto
+## 4. Estructura del Proyecto
 
 ```bash
 TRUSTCORE-TEST/
@@ -67,10 +95,9 @@ TRUSTCORE-TEST/
 └── uv.lock
 ```
 
-
 ---
 
-## 3. Endpoints disponibles
+## 5. Endpoints disponibles
 
 ### Auth
 
@@ -98,7 +125,7 @@ TRUSTCORE-TEST/
 
 ---
 
-## 4. Ejemplos CURL
+## 6. Ejemplos CURL
 
 ### Login
 
@@ -108,8 +135,6 @@ curl -X POST http://localhost:8000/api/v1/auth/login/ \
   -d '{"username": "admin", "password": "12345"}'
 ```
 
----
-
 ### List vulnerabilities
 
 ```bash
@@ -117,16 +142,12 @@ curl http://localhost:8000/api/v1/vulnerabilities/ \
   -H "Authorization: Bearer <access_token>"
 ```
 
----
-
 ### Active vulnerabilities
 
 ```bash
 curl http://localhost:8000/api/v1/vulnerabilities/active/ \
   -H "Authorization: Bearer <access_token>"
 ```
-
----
 
 ### Mark as fixed
 
@@ -137,8 +158,6 @@ curl -X POST http://localhost:8000/api/v1/vulnerabilities/fixed/ \
   -d '{"cve_ids": ["CVE-2024-1234"], "notes": "patched"}'
 ```
 
----
-
 ### Unfix vulnerability
 
 ```bash
@@ -148,8 +167,6 @@ curl -X DELETE http://localhost:8000/api/v1/vulnerabilities/unfixed/ \
   -d '{"cve_id": "CVE-2024-1234"}'
 ```
 
----
-
 ### Summary
 
 ```bash
@@ -157,16 +174,12 @@ curl http://localhost:8000/api/v1/vulnerabilities/summary/ \
   -H "Authorization: Bearer <access_token>"
 ```
 
----
-
 ### Sync NVD
 
 ```bash
 curl -X POST http://localhost:8000/api/v1/vulnerabilities/sync/ \
   -H "Authorization: Bearer <access_token>"
 ```
-
----
 
 ### Health check
 
@@ -176,7 +189,7 @@ curl http://localhost:8000/api/v1/health/
 
 ---
 
-## 5. Migraciones y comandos
+## 7. Migraciones y comandos
 
 ### Migraciones
 
@@ -190,14 +203,14 @@ uv run python manage.py migrate
 ### Comandos del sistema
 
 ```bash
-uv run python manage.py seed  
+uv run python manage.py seed
 uv run python manage.py sync_nvd
 uv run python manage.py runserver
 ```
 
 ---
 
-## 6. Variables de entorno
+## 8. Variables de entorno
 
 ```env
 DB_NAME=postgres
@@ -207,11 +220,9 @@ DB_HOST=db
 DB_PORT=5432
 ```
 
-> En Docker DB_HOST = `db`
-
 ---
 
-## 7. Ejecución del proyecto
+## 9. Ejecución del proyecto
 
 > **Requisito previo:** Después de clonar el repositorio, es obligatorio crear el archivo .env basado en .env.example, independientemente de si se ejecuta con Docker o de forma local.
 
@@ -232,32 +243,38 @@ Esto levanta automáticamente:
 > **Requisito previo:** Debe existir una instancia de PostgreSQL ejecutándose localmente en el puerto 5432.
 
 1. Instalar dependencias
+
 ```bash
 uv sync
 ```
 
 2. Aplicar migraciones
+
 ```bash
 uv run python manage.py migrate
 ```
 
 3. Cargar datos iniciales
+
 ```bash
 uv run python manage.py seed
 ```
 
 4. Sincronizar datos desde NVD
+
 ```bash
 uv run python manage.py sync_nvd
 ```
 
 5. Levantar el servidor
+
 ```bash
 uv run python manage.py runserver
 ```
+
 ---
 
-## 8. Dependencias y tooling
+## 10. Dependencias y tooling
 
 Este proyecto utiliza **uv** para la gestión de dependencias en Python por razones de rendimiento:
 
@@ -267,7 +284,7 @@ Este proyecto utiliza **uv** para la gestión de dependencias en Python por razo
 
 ---
 
-## 9. Rate limiting (Throttling)
+## 11. Rate limiting (Throttling)
 
 ```python
 DEFAULT_THROTTLE_RATES = {
@@ -280,41 +297,30 @@ DEFAULT_THROTTLE_RATES = {
 
 ---
 
-## 10. Consideraciones del sistema
+## 12. Consideraciones del sistema
 
 - Login de prueba:
 
 ```json
-{
-  "username": "admin",
-  "password": "12345"
-}
+{ "username": "admin", "password": "12345" }
 ```
 
 - Sync NVD limitado a 100 registros
-- Unfix solo permite eliminar FIXED
 - Auditoría obligatoria en FIX / UNFIX / SYNC
-- Token JWT válido por 6 horas
+- JWT válido por 6 horas
 
 ---
 
-## 11. Swagger
+## 13. Swagger
 
-```
 http://localhost:8000/api/docs/
-```
-
-## 12. Modelo de Base de Datos
-
-Este proyecto define tres tablas principales en la base de datos:
 
 ---
 
-### 1. vulnerabilities
+## 14. Modelo de Base de Datos
 
-Representa las vulnerabilidades importadas desde NVD (NIST).
+### vulnerabilities
 
-**Campos principales:**
 - cve_id (unique): Identificador CVE
 - description: Descripción de la vulnerabilidad
 - severity: Nivel de severidad (CRITICAL, HIGH, MEDIUM, LOW, UNKNOWN)
@@ -327,37 +333,30 @@ Representa las vulnerabilidades importadas desde NVD (NIST).
 - created_at: Fecha de creación en el sistema
 - updated_at: Fecha de actualización
 
----
-
-### 2. fixed_vulnerabilities
-
-Registra qué vulnerabilidades fueron marcadas como solucionadas por los usuarios.
+### fixed_vulnerabilities
 
 **Relaciones:**
-- vulnerability → Vulnerability
-- fixed_by → Usuario (AUTH_USER_MODEL)
 
-**Campos principales:**
+- vulnerability → Vulnerability
+- fixed_by → Usuario (AUTH_USER_MODEL
+
 - vulnerability (FK)
 - fixed_by (FK)
 - notes: Notas opcionales del fix
 - fixed_at: Fecha de marcado como resuelto
 
 **Restricción:**
+
 - Unique (vulnerability, fixed_by)
 
----
-
-### 3. audit_logs
-
-Registro de auditoría del sistema.
+### audit_logs
 
 **Acciones soportadas:**
+
 - FIX
 - UNFIX
 - SYNC
 
-**Campos principales:**
 - user: Usuario que ejecuta la acción (nullable)
 - action: Tipo de acción
 - cve_id: Vulnerabilidad afectada
@@ -366,9 +365,18 @@ Registro de auditoría del sistema.
 
 ---
 
-## Nota
+## 15. Pruebas (pytest)
 
-Estas tablas soportan:
-- Gestión de vulnerabilidades
-- Flujo de marcado FIX / UNFIX
-- Auditoría completa de operaciones
+### Ejecución
+
+```bash
+pytest
+```
+
+### Cobertura
+
+```bash
+pytest --cov=vulnerabilities
+```
+
+- Cobertura aproximada: 70%
