@@ -19,6 +19,57 @@ El backend sigue una arquitectura tipo **Clean Architecture ligera**:
 
 ---
 
+## 2.1 Estructura del Proyecto
+
+```bash
+TRUSTCORE-TEST/
+├── common/
+│   ├── management/
+│   ├── migrations/
+│   ├── apps.py
+│   ├── auth_urls.py
+│   ├── urls.py
+│   └── views.py
+├── config/
+│   ├── api_router.py
+│   ├── settings.py
+│   └── urls.py
+├── vulnerabilities/
+│   ├── api/
+│   │   └── nvd_sync_views.py
+│   ├── management/
+│   │   └── commands/
+│   │       └── sync_nvd.py
+│   ├── migrations/
+│   ├── services/
+│   │   ├── fixed_service.py
+│   │   ├── nvd_sync_service.py
+│   │   └── vulnerability_service.py
+│   ├── tests/
+│   ├── utils/
+│   ├── admin.py
+│   ├── apps.py
+│   ├── constants.py
+│   ├── models.py
+│   ├── pagination.py
+│   ├── serializers.py
+│   ├── tests.py
+│   ├── throttles.py
+│   ├── urls.py
+│   └── views.py
+├── .env
+├── docker-compose.yaml
+├── dockerfile
+├── manage.py
+├── pyproject.toml
+├── pytest.ini
+├── requirements.txt
+└── uv.lock
+```
+
+
+---
+
 ## 3. Endpoints disponibles
 
 ### Auth
@@ -139,7 +190,7 @@ uv run python manage.py migrate
 ### Comandos del sistema
 
 ```bash
-uv run python manage.py seed
+uv run python manage.py seed  
 uv run python manage.py sync_nvd
 uv run python manage.py runserver
 ```
@@ -162,22 +213,48 @@ DB_PORT=5432
 
 ## 7. Ejecución del proyecto
 
-### Con Docker
+> **Requisito previo:** Después de clonar el repositorio, es obligatorio crear el archivo .env basado en .env.example, independientemente de si se ejecuta con Docker o de forma local.
+
+### Con Docker (recomendado)
 
 ```bash
 docker compose up --build
 ```
 
+Esto levanta automáticamente:
+
+- API Django
+- Base de datos PostgreSQL
+- Migraciones (si están configuradas en el entrypoint)
+
 ### Local
 
+> **Requisito previo:** Debe existir una instancia de PostgreSQL ejecutándose localmente en el puerto 5432.
+
+1. Instalar dependencias
 ```bash
 uv sync
-uv run python manage.py migrate
-uv run python manage.py seed
-uv run python manage.py sync_nvd
-uv run python manage.py runserver
 ```
 
+2. Aplicar migraciones
+```bash
+uv run python manage.py migrate
+```
+
+3. Cargar datos iniciales
+```bash
+uv run python manage.py seed
+```
+
+4. Sincronizar datos desde NVD
+```bash
+uv run python manage.py sync_nvd
+```
+
+5. Levantar el servidor
+```bash
+uv run python manage.py runserver
+```
 ---
 
 ## 8. Dependencias y tooling
