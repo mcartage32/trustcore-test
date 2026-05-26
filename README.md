@@ -53,6 +53,8 @@ El backend sigue una arquitectura tipo **Clean Architecture ligera**:
 TRUSTCORE-TEST/
 ├── common/
 │   ├── management/
+│   │   └── commands/
+│   │       └── seed.py
 │   ├── migrations/
 │   ├── apps.py
 │   ├── auth_urls.py
