@@ -1,0 +1,4 @@
+# NVD Sync configuration
+
+NVD_DEFAULT_PAGE = 0
+NVD_DEFAULT_LIMIT = 100
