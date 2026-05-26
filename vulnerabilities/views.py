@@ -17,6 +17,7 @@ from vulnerabilities.services.vulnerability_service import (
     get_active_vulnerabilities,
     get_all_vulnerabilities,
     get_vulnerability_summary,
+    unfix_vulnerability,
 )
 from vulnerabilities.throttles import FixedRateThrottle
 
@@ -143,3 +144,36 @@ class VulnerabilitySummaryView(APIView):
     def get(self, request):
         data = get_vulnerability_summary()
         return Response(data)
+    
+@extend_schema(
+    summary="Unfix vulnerability",
+    description="Physically removes FIXED record and writes audit log",
+    parameters=[
+        OpenApiParameter(
+            name="cve_id",
+            type=OpenApiTypes.STR,
+            required=True
+        )
+    ],
+    responses={
+        200: {
+            "type": "object",
+            "properties": {
+                "cve_id": {"type": "string"},
+                "unfixed": {"type": "boolean"},
+                "deleted": {"type": "integer"},
+            }
+        }
+    }
+)
+class UnfixVulnerabilitiesView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def delete(self, request):
+        cve_id = request.query_params.get("cve_id")
+        result = unfix_vulnerability(
+            user=request.user,
+            cve_id=cve_id
+        )
+
+        return Response(result)
