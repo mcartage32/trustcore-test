@@ -16,6 +16,7 @@ from vulnerabilities.serializers import (
 from vulnerabilities.services.vulnerability_service import (
     get_active_vulnerabilities,
     get_all_vulnerabilities,
+    get_vulnerability_summary,
 )
 
 
@@ -117,3 +118,26 @@ class ActiveVulnerabilitiesView(ListAPIView):
             published_from=self.request.query_params.get("published_from"),
             published_to=self.request.query_params.get("published_to"),
         )
+    
+@extend_schema(
+    summary="Vulnerability summary by severity",
+    description="Returns aggregated count of vulnerabilities grouped by severity",
+    responses={
+        200: {
+            "type": "object",
+            "properties": {
+                "CRITICAL": {"type": "integer"},
+                "HIGH": {"type": "integer"},
+                "MEDIUM": {"type": "integer"},
+                "LOW": {"type": "integer"},
+                "UNKNOWN": {"type": "integer"},
+            }
+        }
+    }
+)
+class VulnerabilitySummaryView(APIView):
+    permission_classes = [IsAuthenticated]
+
+    def get(self, request):
+        data = get_vulnerability_summary()
+        return Response(data)
