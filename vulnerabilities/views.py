@@ -14,6 +14,7 @@ from vulnerabilities.serializers import (
     VulnerabilityFilterSerializer,
 )
 from vulnerabilities.services.vulnerability_service import (
+    get_active_vulnerabilities,
     get_all_vulnerabilities,
 )
 
@@ -80,3 +81,39 @@ class FixedVulnerabilitiesView(APIView):
         )
 
         return Response(result)
+    
+
+@extend_schema(
+    summary="List active vulnerabilities",
+    description="Returns vulnerabilities excluding FIXED ones",
+    parameters=[
+        OpenApiParameter("cve_id", OpenApiTypes.STR, required=False),
+        OpenApiParameter(
+            "severity",
+            OpenApiTypes.STR,
+            required=False,
+            enum=["CRITICAL", "HIGH", "MEDIUM", "LOW", "UNKNOWN"],
+        ),
+        OpenApiParameter(
+            "status",
+            OpenApiTypes.STR,
+            required=False,
+            enum=["ACTIVE", "FIXED", "DEPRECATED"],
+        ),
+        OpenApiParameter("published_from", OpenApiTypes.DATE, required=False),
+        OpenApiParameter("published_to", OpenApiTypes.DATE, required=False),
+    ],
+    responses=VulnerabilitySerializer(many=True),
+)
+class ActiveVulnerabilitiesView(ListAPIView):
+    serializer_class = VulnerabilitySerializer
+    permission_classes = [IsAuthenticated]
+    pagination_class = VulnerabilityPagination
+
+    def get_queryset(self):
+        return get_active_vulnerabilities(
+            cve_id=self.request.query_params.get("cve_id"),
+            severity=self.request.query_params.get("severity"),
+            published_from=self.request.query_params.get("published_from"),
+            published_to=self.request.query_params.get("published_to"),
+        )
