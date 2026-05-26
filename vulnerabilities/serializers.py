@@ -35,3 +35,10 @@ class SyncResponseSerializer(serializers.Serializer):
     created = serializers.IntegerField()
     updated = serializers.IntegerField()
     total = serializers.IntegerField()
+
+class FixedVulnerabilityRequestSerializer(serializers.Serializer):
+    cve_ids = serializers.ListField(
+        child=serializers.CharField(),
+        allow_empty=False
+    )
+    notes = serializers.CharField(required=False, allow_blank=True)
