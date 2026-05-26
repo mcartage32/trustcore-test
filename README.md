@@ -210,5 +210,19 @@ DEFAULT_THROTTLE_RATES = {
 ```json
 {
   "username": "admin",
-  "pas
+  "password": "12345"
+}
+```
+
+- Sync NVD limitado a 100 registros
+- Unfix solo permite eliminar FIXED
+- Auditoría obligatoria en FIX / UNFIX / SYNC
+- Token JWT válido por 6 horas
+
+---
+
+## 11. Swagger
+
+```
+http://localhost:8000/api/docs/
 ```
