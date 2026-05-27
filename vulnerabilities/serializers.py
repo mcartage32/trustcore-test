@@ -36,6 +36,32 @@ class SyncResponseSerializer(serializers.Serializer):
     updated = serializers.IntegerField()
     total = serializers.IntegerField()
 
+
+
+class SyncRequestSerializer(serializers.Serializer):
+    cve_id = serializers.CharField(
+        required=False
+    )
+
+    pub_start_date = serializers.DateTimeField(
+        required=False
+    )
+
+    pub_end_date = serializers.DateTimeField(
+        required=False
+    )
+
+    page = serializers.IntegerField(
+        required=False,
+        default=0
+    )
+
+    limit = serializers.IntegerField(
+        required=False,
+        default=20
+    )
+
+
 class FixedVulnerabilityRequestSerializer(serializers.Serializer):
     cve_ids = serializers.ListField(
         child=serializers.CharField(),

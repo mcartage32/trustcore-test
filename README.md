@@ -342,7 +342,7 @@ http://localhost:8000/api/docs/
 **Relaciones:**
 
 - vulnerability → Vulnerability
-- fixed_by → Usuario (AUTH_USER_MODEL
+- fixed_by → Usuario (AUTH_USER_MODEL)
 
 - vulnerability (FK)
 - fixed_by (FK)
